@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pacientes · SISOL</title>
+    <link rel="stylesheet" th:href="@{/css/pacientes.css}">
+    <script defer th:src="@{/js/pacientes.js}"></script>
+</head>
+<body>
+<header><a th:href="@{/pacientes}" class="marca">SISOL <span>Laboratorio</span></a><span>Gestión de pacientes</span></header>
+<main id="pacientes-app" th:attr="data-api=@{/api/pacientes},data-id-edicion=${idEdicion}">
+    <div class="encabezado"><p class="etiqueta">ATENCIÓN AL PACIENTE</p><h1>Pacientes</h1><p>Administra los datos del paciente sin salir del listado.</p></div>
+    <noscript><p class="mensaje error">Activa JavaScript para agregar, editar o eliminar pacientes.</p></noscript>
+    <div id="mensaje" class="mensaje" role="status" hidden></div>
+    <div id="error-consulta" class="mensaje error" role="alert" th:if="${errorConsulta}" th:text="${errorConsulta}"></div>
+    <section class="tarjeta listado">
+        <div class="titulo-listado"><h2>Pacientes registrados</h2><div class="acciones"><button type="button" id="actualizar" class="secundario">Actualizar</button><button type="button" id="agregar">Agregar paciente</button></div></div>
+        <p id="cantidad" th:text="|${#lists.size(pacientes)} registros|"></p>
+        <p id="vacio" class="vacio" th:hidden="${!#lists.isEmpty(pacientes) or errorConsulta != null}">Todavía no hay pacientes registrados.</p>
+        <div class="tabla"><table><caption class="sr-only">Listado de pacientes</caption>
+            <thead><tr><th>ID</th><th>DNI</th><th>Paciente</th><th>Nacimiento</th><th>Contacto</th><th>Acciones</th></tr></thead>
+            <tbody id="filas"><tr th:each="p : ${pacientes}" th:attr="data-id=${p.idPaciente}">
+                <td th:text="${p.idPaciente}"></td><td th:text="${p.dni}"></td><td th:text="|${p.nombres} ${p.apellidos}|"></td><td th:text="${p.fechaNacimiento}"></td>
+                <td><span th:text="${p.telefono}"></span><br><span th:text="${p.email}"></span></td>
+                <td><div class="acciones"><button type="button" class="secundario" data-accion="editar" th:attr="data-id=${p.idPaciente}">Editar</button><button type="button" class="peligro" data-accion="eliminar" th:attr="data-id=${p.idPaciente},data-nombre=|${p.nombres} ${p.apellidos}|">Eliminar</button></div></td>
+            </tr></tbody>
+        </table></div>
+    </section>
+</main>
+<dialog id="modal-paciente" aria-labelledby="titulo-modal">
+    <div class="titulo-listado"><h2 id="titulo-modal">Agregar paciente</h2><button type="button" class="secundario cerrar" data-cerrar aria-label="Cerrar formulario">×</button></div>
+    <p>Los campos con * son obligatorios.</p>
+    <div id="error-formulario" class="mensaje error" role="alert" hidden></div>
+    <form id="form-paciente">
+        <label for="dni">DNI *</label><input id="dni" name="dni" maxlength="15" required aria-describedby="error-dni"><p id="error-dni" class="campo-error" hidden></p>
+        <label for="nombres">Nombres *</label><input id="nombres" name="nombres" maxlength="100" required autocomplete="given-name" aria-describedby="error-nombres"><p id="error-nombres" class="campo-error" hidden></p>
+        <label for="apellidos">Apellidos *</label><input id="apellidos" name="apellidos" maxlength="100" required autocomplete="family-name" aria-describedby="error-apellidos"><p id="error-apellidos" class="campo-error" hidden></p>
+        <label for="fechaNacimiento">Fecha de nacimiento *</label><input id="fechaNacimiento" name="fechaNacimiento" type="date" required autocomplete="bday" aria-describedby="error-fechaNacimiento"><p id="error-fechaNacimiento" class="campo-error" hidden></p>
+        <label for="telefono">Teléfono</label><input id="telefono" name="telefono" type="tel" maxlength="20" autocomplete="tel" aria-describedby="error-telefono"><p id="error-telefono" class="campo-error" hidden></p>
+        <label for="email">Correo electrónico</label><input id="email" name="email" type="email" maxlength="100" autocomplete="email" aria-describedby="error-email"><p id="error-email" class="campo-error" hidden></p>
+        <div class="acciones pie-modal"><button type="button" class="secundario" data-cerrar>Cancelar</button><button type="submit" id="guardar">Agregar paciente</button></div>
+    </form>
+</dialog>
+<dialog id="modal-eliminar" aria-labelledby="titulo-eliminar">
+    <h2 id="titulo-eliminar">Eliminar paciente</h2><p id="detalle-eliminar"></p><p>Esta acción no se puede deshacer. Los pacientes con órdenes o facturas asociadas no se pueden eliminar.</p>
+    <div id="error-eliminar" class="mensaje error" role="alert" hidden></div>
+    <div class="acciones pie-modal"><button type="button" class="secundario" id="cancelar-eliminar">Cancelar</button><button type="button" class="peligro" id="confirmar-eliminar">Eliminar paciente</button></div>
+</dialog>
+</body>
+</html>

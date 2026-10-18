@@ -1,0 +1,5 @@
+target/
+config/database-local.properties
+*.class
+Reporte_*.txt
+Reporte_*.pdf
